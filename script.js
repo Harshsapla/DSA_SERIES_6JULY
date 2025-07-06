@@ -1,4 +1,4 @@
-/* Question-1
+/* Question-1  -----GREEDY-----
 
 122. Best Time to Buy and Sell Stock II
 Medium
