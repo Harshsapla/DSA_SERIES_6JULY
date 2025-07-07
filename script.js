@@ -54,3 +54,39 @@
 //     return sell2;
     
 // };
+question-3/**
+ * @param {number} k
+ * @param {number[]} prices
+ * @return {number}
+ */
+let maxProfit = function(k, prices) {
+    const n = prices.length;
+
+    // Edge case: no prices or no transactions allowed
+    if (n === 0 || k === 0) return 0;
+
+    // Optimization: if we can trade every day, use greedy approach (like LC-122)
+    if (k >= n / 2) {
+        let profit = 0;
+        for (let i = 1; i < n; i++) {
+            if (prices[i] > prices[i - 1]) {
+                profit += prices[i] - prices[i - 1]; // buy yesterday, sell today
+            }
+        }
+        return profit;
+    }
+
+    // DP table: dp[t][d] → max profit up to day d with t transactions
+    const dp = Array.from({ length: k + 1 }, () => Array(n).fill(0));
+
+    for (let t = 1; t <= k; t++) {
+        let maxDiff = -prices[0]; // max(dp[t-1][m] - prices[m])
+        for (let d = 1; d < n; d++) {
+            dp[t][d] = Math.max(dp[t][d - 1], prices[d] + maxDiff);
+            maxDiff = Math.max(maxDiff, dp[t - 1][d] - prices[d]);
+        }
+    }
+
+    return dp[k][n - 1]; // Final answer
+};
+
