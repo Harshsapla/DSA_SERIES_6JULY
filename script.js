@@ -39,9 +39,7 @@
 // // Note: You may not engage in multiple transactions simultaneously (i.e., you must sell the stock before you buy again).
 // solution-2
 // /**
-//  * @param {number[]} prices
-//  * @return {number}
-//  */
+
 // var maxProfit = function(prices) {
 //     let buy1 = -Infinity;
 //     let sell1 = 0;
