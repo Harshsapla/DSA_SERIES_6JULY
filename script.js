@@ -177,3 +177,45 @@
 //   return dp[k][n - 1];
 // }
 
+leetcode -3333 /**
+ * @param {number[]} prices
+ * @param {number} k
+ * @return {number}
+ */
+/**
+ * @param {number[]} prices
+ * @param {number} k
+ * @return {number}
+ */
+function maximumProfit(prices, k) {
+    const n = prices.length;
+    if (n < 2 || k === 0) {
+        return 0;
+    }
+
+    const cash = new Array(k + 1).fill().map(() => new Array(n).fill(0));
+    const longHold = new Array(k + 1).fill().map(() => new Array(n).fill(-Infinity));
+    const shortHold = new Array(k + 1).fill().map(() => new Array(n).fill(-Infinity));
+
+    for (let i = 1; i <= k; i++) {
+        longHold[i][0] = -prices[0];
+        shortHold[i][0] = prices[0];
+        for (let j = 1; j < n; j++) {
+            cash[i][j] = Math.max(
+                cash[i][j - 1],
+                longHold[i][j - 1] + prices[j],
+                shortHold[i][j - 1] - prices[j]
+            );
+            longHold[i][j] = Math.max(
+                longHold[i][j - 1],
+                cash[i - 1][j - 1] - prices[j]
+            );
+            shortHold[i][j] = Math.max(
+                shortHold[i][j - 1],
+                cash[i - 1][j - 1] + prices[j]
+            );
+        }
+    }
+
+    return cash[k][n - 1];
+}
