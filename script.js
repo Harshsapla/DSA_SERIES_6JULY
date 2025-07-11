@@ -243,3 +243,21 @@
 // 1 <= nums.length <= 105
 // -109 <= nums[i] <= 109
 // 0 <= k <= 105
+/**
+ * @param {number[]} nums
+ * @param {number} k
+ * @return {boolean}
+ */
+var containsNearbyDuplicate = function(nums, k) {
+    let map = new Map();
+    for(let i = 0; i<nums.length;i++){
+        if(map.has(nums[i])){
+            let previousindex = map.get(nums[i]);
+            if(i - previousindex <= k){
+                return true;
+            }
+        }
+        map.set(nums[i],i);
+    }
+    return false;
+};
