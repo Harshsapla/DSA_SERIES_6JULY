@@ -325,3 +325,51 @@
 
 //     return false;
 // };
+import java.util.HashMap;
+import java.util.Map;
+
+public class Solution {
+    public boolean containsNearbyAlmostDuplicate(int[] nums, int indexDiff, int valueDiff) {
+        if (valueDiff < 0) return false;
+
+        Map<Long, Long> buckets = new HashMap<>();
+        long size = (long) valueDiff + 1;
+
+        for (int i = 0; i < nums.length; i++) {
+            long num = (long) nums[i];
+            long bucketId = getBucketId(num, size);
+
+            // Same bucket
+            if (buckets.containsKey(bucketId)) {
+                return true;
+            }
+
+            // Neighboring buckets
+            if (
+                buckets.containsKey(bucketId - 1) && Math.abs(num - buckets.get(bucketId - 1)) <= valueDiff ||
+                buckets.containsKey(bucketId + 1) && Math.abs(num - buckets.get(bucketId + 1)) <= valueDiff
+            ) {
+                return true;
+            }
+
+            // Add to bucket
+            buckets.put(bucketId, num);
+
+            // Remove old bucket outside indexDiff
+            if (i >= indexDiff) {
+                long oldBucketId = getBucketId((long) nums[i - indexDiff], size);
+                buckets.remove(oldBucketId);
+            }
+        }
+
+        return false;
+    }
+
+    private long getBucketId(long num, long size) {
+        if (num >= 0) {
+            return num / size;
+        } else {
+            return ((num + 1) / size) - 1;
+        }
+    }
+}
