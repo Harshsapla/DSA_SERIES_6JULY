@@ -286,4 +286,42 @@
 // Input: nums = [1,5,9,1,5,9], indexDiff = 2, valueDiff = 3
 // Output: false
 // Explanation: After trying all the possible pairs (i, j), we cannot satisfy the three conditions, so we return false.
- 
+ /**
+ * @param {number[]} nums
+ * @param {number} indexDiff
+ * @param {number} valueDiff
+ * @return {boolean}
+ */
+
+var containsNearbyAlmostDuplicate = function(nums, indexDiff, valueDiff) {
+    if (valueDiff < 0) return false;
+
+    const buckets = new Map();
+    const size = valueDiff + 1; // bucket size
+
+    for (let i = 0; i < nums.length; i++) {
+        const bucketId = Math.floor(nums[i] / size);
+
+        // Same bucket
+        if (buckets.has(bucketId)) return true;
+
+        // Check neighboring buckets
+        if (
+            (buckets.has(bucketId - 1) && Math.abs(nums[i] - buckets.get(bucketId - 1)) <= valueDiff) ||
+            (buckets.has(bucketId + 1) && Math.abs(nums[i] - buckets.get(bucketId + 1)) <= valueDiff)
+        ) {
+            return true;
+        }
+
+        // Add to bucket
+        buckets.set(bucketId, nums[i]);
+
+        // Remove bucket outside indexDiff
+        if (i >= indexDiff) {
+            const oldBucketId = Math.floor(nums[i - indexDiff] / size);
+            buckets.delete(oldBucketId);
+        }
+    }
+
+    return false;
+};
