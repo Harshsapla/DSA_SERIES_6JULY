@@ -379,3 +379,77 @@
 // Input: intervals = [[1,4],[4,5]]
 // Output: [[1,5]]
 // Explanation: Intervals [1,4] 
+/**
+ * @param {number[][]} intervals
+ * @return {number[][]}
+ */
+var merge = function(intervals) {
+    // Edge case: if array is empty or has only one interval
+    if (intervals.length <= 1) {
+        return intervals;
+    }
+    
+    // Sort intervals by start time
+    intervals.sort((a, b) => a[0] - b[0]);
+    
+    const merged = [];
+    
+    // Add first interval to result
+    merged.push(intervals[0]);
+    
+    // Iterate through remaining intervals
+    for (let i = 1; i < intervals.length; i++) {
+        const current = intervals[i];
+        const lastMerged = merged[merged.length - 1];
+        
+        // Check if current interval overlaps with last merged interval
+        if (current[0] <= lastMerged[1]) {
+            // Overlap exists, merge by updating end time
+            lastMerged[1] = Math.max(lastMerged[1], current[1]);
+        } else {
+            // No overlap, add current interval to result
+            merged.push(current);
+        }
+    }
+    
+    return merged;
+};
+
+// Alternative ES6+ approach using reduce
+var mergeAlternative = function(intervals) {
+    if (intervals.length <= 1) return intervals;
+    
+    // Sort intervals by start time
+    intervals.sort((a, b) => a[0] - b[0]);
+    
+    return intervals.reduce((merged, current) => {
+        const lastMerged = merged[merged.length - 1];
+        
+        // If merged is empty or no overlap, add current interval
+        if (!lastMerged || current[0] > lastMerged[1]) {
+            merged.push(current);
+        } else {
+            // Overlap exists, merge intervals
+            lastMerged[1] = Math.max(lastMerged[1], current[1]);
+        }
+        
+        return merged;
+    }, []);
+};
+
+// Test cases
+console.log("Test 1:", merge([[1,3],[2,6],[8,10],[15,18]]));
+// Expected: [[1,6],[8,10],[15,18]]
+
+console.log("Test 2:", merge([[1,4],[4,5]]));
+// Expected: [[1,5]]
+
+console.log("Test 3:", merge([[1,4],[0,4]]));
+// Expected: [[0,4]]
+
+console.log("Test 4:", merge([[1,4],[2,3]]));
+// Expected: [[1,4]]
+
+// Using alternative approach
+console.log("Alternative Test 1:", mergeAlternative([[1,3],[2,6],[8,10],[15,18]]));
+// Expected: [[1,6],[8,10],[15,18]]
