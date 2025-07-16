@@ -145,5 +145,63 @@
 //         }
 //     }
 // }
+import java.util.*;
 
+class Solution {
+    public int[][] merge(int[][] intervals) {
+        // Edge case: if array is empty or has only one interval
+        if (intervals.length <= 1) {
+            return intervals;
+        }
+        
+        // Sort intervals by start time
+        Arrays.sort(intervals, (a, b) -> Integer.compare(a[0], b[0]));
+        
+        List<int[]> merged = new ArrayList<>();
+        
+        // Add first interval to result
+        merged.add(intervals[0]);
+        
+        // Iterate through remaining intervals
+        for (int i = 1; i < intervals.length; i++) {
+            int[] current = intervals[i];
+            int[] lastMerged = merged.get(merged.size() - 1);
+            
+            // Check if current interval overlaps with last merged interval
+            if (current[0] <= lastMerged[1]) {
+                // Overlap exists, merge by updating end time
+                lastMerged[1] = Math.max(lastMerged[1], current[1]);
+            } else {
+                // No overlap, add current interval to result
+                merged.add(current);
+            }
+        }
+        
+        // Convert List to array
+        return merged.toArray(new int[merged.size()][]);
+    }
+    
+    // Test method
+    public static void main(String[] args) {
+        Solution solution = new Solution();
+        
+        // Test case 1
+        int[][] intervals1 = {{1,3},{2,6},{8,10},{15,18}};
+        int[][] result1 = solution.merge(intervals1);
+        System.out.println("Test 1: " + Arrays.deepToString(result1));
+        // Expected: [[1,6],[8,10],[15,18]]
+        
+        // Test case 2
+        int[][] intervals2 = {{1,4},{4,5}};
+        int[][] result2 = solution.merge(intervals2);
+        System.out.println("Test 2: " + Arrays.deepToString(result2));
+        // Expected: [[1,5]]
+        
+        // Test case 3: Edge case
+        int[][] intervals3 = {{1,4},{0,4}};
+        int[][] result3 = solution.merge(intervals3);
+        System.out.println("Test 3: " + Arrays.deepToString(result3));
+        // Expected: [[0,4]]
+    }
+}
 
