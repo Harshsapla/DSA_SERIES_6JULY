@@ -479,4 +479,17 @@
 // Output: true
 // Explanation: s is an empty string "" after removing non-alphanumeric characters.
 // Since an empty string reads the same forward and backward, it is a palindrome.
+function isPalindrome(s) {
+  // Remove non-alphanumeric characters and convert to lowercase
+  const cleaned = s.replace(/[^a-z0-9]/gi, '').toLowerCase();
+
+  // Reverse the cleaned string and compare
+  const reversed = cleaned.split('').reverse().join('');
+  return cleaned === reversed;
+}
+
+// Examples:
+console.log(isPalindrome("A man, a plan, a canal: Panama")); // true
+console.log(isPalindrome("race a car")); // false
+console.log(isPalindrome(" ")); // true
  
