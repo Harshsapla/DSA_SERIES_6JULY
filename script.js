@@ -610,3 +610,24 @@
 //     // For odd digit numbers, x === Math.floor(reversed / 10)
 //     return x === reversed || x === Math.floor(reversed / 10);
 // };
+/**
+ * @param {number[]} nums
+ * @return {number}
+ */
+var maximumUniqueSubarray = function(nums) {
+    let seen = new Set();
+    let left = 0;
+    let max = 0;
+    let current = 0;
+    for(let i= 0;i<nums.length;i++){
+        while(seen.has(nums[i])){
+            seen.delete(nums[left]);
+            current -= nums[left] ;
+            left ++;
+        }
+        seen.add(nums[i]);
+        current += nums[i];
+        max = Math.max(max,current);
+    }
+    return max;
+};
