@@ -631,3 +631,118 @@
 //     }
 //     return max;
 // };
+function minimumScore(nums, edges) {
+    const n = nums.length;
+    const adj = Array.from({ length: n }, () => []);
+    for (const [u, v] of edges) {
+        adj[u].push(v);
+        adj[v].push(u);
+    }
+
+    // We'll perform a DFS to compute xor and parent for each node, and establish an order.
+    const parent = new Array(n).fill(-1);
+    const xor = new Array(n).fill(0);
+    const visited = new Array(n).fill(false);
+    const stack = [[0, true]]; // [node, isEntering]
+
+    while (stack.length) {
+        const [node, isEntering] = stack.pop();
+        if (isEntering) {
+            visited[node] = true;
+            stack.push([node, false]);
+            for (const neighbor of adj[node]) {
+                if (!visited[neighbor] && neighbor !== parent[node]) {
+                    parent[neighbor] = node;
+                    stack.push([neighbor, true]);
+                }
+            }
+        } else {
+            xor[node] = nums[node];
+            for (const neighbor of adj[node]) {
+                if (neighbor !== parent[node]) {
+                    xor[node] ^= xor[neighbor];
+                }
+            }
+        }
+    }
+
+    let minScore = Infinity;
+
+    // Iterate all possible pairs of edges (u1, v1) and (u2, v2)
+    // To split into three components, the edges must be such that one is not in the subtree of the other.
+    // So, we can represent the edges as parent-child pairs.
+    const edgeList = [];
+    for (let i = 0; i < n; i++) {
+        if (parent[i] !== -1) {
+            edgeList.push([parent[i], i]);
+        }
+    }
+
+    for (let i = 0; i < edgeList.length; i++) {
+        const [a1, b1] = edgeList[i];
+        for (let j = i + 1; j < edgeList.length; j++) {
+            const [a2, b2] = edgeList[j];
+            let x, y, z;
+
+            // Check if b2 is in the subtree of b1
+            let isB2InSubtreeOfB1 = false;
+            let current = b2;
+            while (current !== -1) {
+                if (current === b1) {
+                    isB2InSubtreeOfB1 = true;
+                    break;
+                }
+                current = parent[current];
+            }
+
+            if (isB2InSubtreeOfB1) {
+                // The three components are:
+                // 1. Subtree of b2: xor[b2]
+                // 2. Subtree of b1 excluding subtree of b2: xor[b1] ^ xor[b2]
+                // 3. The rest: xor[0] ^ xor[b1]
+                x = xor[b2];
+                y = xor[b1] ^ xor[b2];
+                z = xor[0] ^ xor[b1];
+            } else {
+                // Check if b1 is in the subtree of b2
+                let isB1InSubtreeOfB2 = false;
+                current = b1;
+                while (current !== -1) {
+                    if (current === b2) {
+                        isB1InSubtreeOfB2 = true;
+                        break;
+                    }
+                    current = parent[current];
+                }
+
+                if (isB1InSubtreeOfB2) {
+                    // The three components are:
+                    // 1. Subtree of b1: xor[b1]
+                    // 2. Subtree of b2 excluding subtree of b1: xor[b2] ^ xor[b1]
+                    // 3. The rest: xor[0] ^ xor[b2]
+                    x = xor[b1];
+                    y = xor[b2] ^ xor[b1];
+                    z = xor[0] ^ xor[b2];
+                } else {
+                    // The two edges are in different subtrees
+                    // The three components are:
+                    // 1. Subtree of b1: xor[b1]
+                    // 2. Subtree of b2: xor[b2]
+                    // 3. The rest: xor[0] ^ xor[b1] ^ xor[b2]
+                    x = xor[b1];
+                    y = xor[b2];
+                    z = xor[0] ^ xor[b1] ^ xor[b2];
+                }
+            }
+
+            const maxVal = Math.max(x, y, z);
+            const minVal = Math.min(x, y, z);
+            const score = maxVal - minVal;
+            if (score < minScore) {
+                minScore = score;
+            }
+        }
+    }
+
+    return minScore;
+}
